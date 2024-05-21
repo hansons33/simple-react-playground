@@ -13,7 +13,7 @@ export type Files = {
 
 export type PlaygroundContext = {
     files: Files
-    fileHash: string
+    filesHash: string
     theme: Theme
     setTheme: (theme: Theme) => void
     setFiles: (files: Files) => void
@@ -23,4 +23,8 @@ export type PlaygroundContext = {
     updateFileName: (oldFieldName: string, newFieldName: string) => void
     changeTheme: (theme: Theme) => void
     setSelectedFileName: (fileName: string) => void
+}
+export type PreviewData = {
+    compileCode: string
+    importmap: string
 }

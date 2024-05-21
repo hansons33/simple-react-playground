@@ -1,0 +1,30 @@
+.selector {
+    display: flex;
+    font-size: 14px;
+    color: var(--base);
+    padding: 0 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+    .item {
+        padding: 8px;
+        cursor: pointer;
+        margin-right: 8px;
+        position: relative;
+    }
+    .active {
+        color: var(--primary);
+        position: relative;
+
+        &::after {
+            content: "";
+            position: absolute;
+            width: 50%;
+            height: 2px;
+            bottom: 0;
+            background-color: var(--primary);
+            left: 50%;
+            transform: translateX(-50%);
+        }
+    }
+}

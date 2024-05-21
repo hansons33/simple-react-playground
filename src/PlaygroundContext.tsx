@@ -5,6 +5,7 @@ import { fileName2Language, setPlaygroundTheme, utoa } from "./utils"
 
 const initialContext: Partial<PlaygroundContext> = {
     selectedFileName: MAIN_FILE_NAME,
+    theme: "light",
 }
 
 export const PlaygoundContext = createContext<PlaygroundContext>(
@@ -21,7 +22,8 @@ export const PlaygroundProvider = (props: {
     const [selectedFileName, setSelectedFileName] = useState(
         initialContext.selectedFileName!
     )
-    const [fileHash, setFilesHash] = useState("")
+    const [filesHash, setFilesHash] = useState("")
+    const [hasInit, setHasInit] = useState(false)
     const addFile = (name: string) => {
         files[name] = {
             name,
@@ -29,6 +31,7 @@ export const PlaygroundProvider = (props: {
             value: "",
         }
         setFiles({ ...files })
+        setSelectedFileName(name)
     }
     const removeFile = (name: string) => {
         delete files[name]
@@ -62,13 +65,14 @@ export const PlaygroundProvider = (props: {
         const hash = utoa(JSON.stringify(files))
         if (saveOnUrl) window.location.hash = hash
         setFilesHash(hash)
+        setHasInit(true)
     }, [files])
 
     return (
         <PlaygoundContext.Provider
             value={{
                 theme,
-                fileHash,
+                filesHash,
                 addFile,
                 updateFileName,
                 removeFile,
@@ -80,7 +84,7 @@ export const PlaygroundProvider = (props: {
                 files,
             }}
         >
-            {children}
+            {hasInit && children}
         </PlaygoundContext.Provider>
     )
 }

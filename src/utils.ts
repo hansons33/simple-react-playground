@@ -1,4 +1,4 @@
-import { Theme } from "./types"
+import { Files, Theme } from "./types"
 export function debounce(fn: (...args: any[]) => void, n = 100) {
     let handle: any
     return (...args: any[]) => {
@@ -21,8 +21,9 @@ const STORAGE_DARK_THEME = "react-playground-prefer-dark"
 
 export const setPlaygroundTheme = (theme: Theme) => {
     localStorage.setItem(STORAGE_DARK_THEME, String(theme === "dark"))
+    console.log(document.querySelectorAll('div[data-id="react-playground"]'))
     document
-        .querySelectorAll('div[data-id="react-playground]')
+        .querySelectorAll('div[data-id="react-playground"]')
         ?.forEach((item) => item.setAttribute("class", theme))
 }
 export const getPlaygroundTheme = () => {
@@ -38,4 +39,17 @@ export const fileName2Language = (name: string) => {
     if (["json"].includes(suffix)) return "json"
     if (["css"].includes(suffix)) return "css"
     return "javascript"
+}
+// 从url hash中获取files
+export const getFilesFromUrl = () => {
+    let files: Files | undefined
+    try {
+        if (typeof window !== "undefined") {
+            const hash = window.location.hash
+            if (hash) files = JSON.parse(atou(hash?.split("#")[1]))
+        }
+    } catch (error) {
+        console.error(error)
+    }
+    return files
 }

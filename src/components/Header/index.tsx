@@ -1,10 +1,22 @@
-import { useContext } from "react"
+import { useContext, useState } from "react"
 import style from "./index.module.less"
 import { icons } from "./utils"
 import { PlaygoundContext } from "../../PlaygroundContext"
+import { CopyToClipboard } from "react-copy-to-clipboard"
 export const Header: React.FC = (props) => {
-    console.log(icons)
-    const { theme } = useContext(PlaygoundContext)
+    const { theme, changeTheme, filesHash } = useContext(PlaygoundContext)
+    console.log(theme)
+    const [copyed, setCopyed] = useState(false)
+    const shareUrl =
+        window.self !== window.top
+            ? `${window.parent.location.host}${window.parent.location.pathname}#${filesHash}`
+            : `${location.host}${location.pathname}#${filesHash}`
+    const copyLink = () => {
+        setCopyed(true)
+        setTimeout(() => {
+            setCopyed(false)
+        }, 3000)
+    }
     return (
         <div className={style.header}>
             <div className={style.logo}>
@@ -15,7 +27,7 @@ export const Header: React.FC = (props) => {
                 {theme === "light" && (
                     <button
                         title="Toggle dark mode"
-                        className={styles.theme}
+                        className={style.theme}
                         dangerouslySetInnerHTML={{ __html: icons.SunSvg }}
                         onClick={() => changeTheme("dark")}
                     />
@@ -23,7 +35,7 @@ export const Header: React.FC = (props) => {
                 {theme === "dark" && (
                     <button
                         title="Toggle light mode"
-                        className={styles.theme}
+                        className={style.theme}
                         dangerouslySetInnerHTML={{ __html: icons.MoonSvg }}
                         onClick={() => changeTheme("light")}
                     />
@@ -38,19 +50,8 @@ export const Header: React.FC = (props) => {
                         onClick={copyLink}
                     />
                 </CopyToClipboard>
-
-                <button
-                    title="Download project files"
-                    dangerouslySetInnerHTML={{
-                        __html: downloaded
-                            ? icons.SuccessSvg
-                            : icons.DownloadSvg,
-                    }}
-                    onClick={downloadProject}
-                />
-
                 <a
-                    href="https://github.com/fewismuch/react-playground"
+                    href="https://github.com/hansons33/simple-react-playground"
                     target="_blank"
                     title="View on GitHub"
                 >

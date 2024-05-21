@@ -1,5 +1,7 @@
 import { transform } from "@babel/standalone"
-const babelTransform = (filename: string, code: string, files) => {
+import { Files } from "../../types"
+import { ENTRY_FILE_NAME } from "../../files"
+const babelTransform = (filename: string, code: string, files: Files) => {
     const _code = beforeTransformCodeHandler(code, filename)
     let result = ""
     try {
@@ -15,7 +17,6 @@ const babelTransform = (filename: string, code: string, files) => {
 }
 
 self.addEventListener("message", async ({ data }) => {
-    console.log("收到消息", data)
     try {
         if (typeof data === "string") {
             data = beforeTransformCodeHandler(data)
@@ -29,11 +30,15 @@ self.addEventListener("message", async ({ data }) => {
             })
             return
         }
+        self.postMessage({
+            type: "UPDATE_FILES",
+            data: compile(data),
+        })
     } catch (e) {
         self.postMessage({ type: "ERROR", error: e })
     }
 })
-const customResolver = (files) => {
+const customResolver = (files: Files) => {
     return {
         visitor: {
             ImportDeclaration(path: any) {
@@ -64,6 +69,11 @@ const customResolver = (files) => {
         },
     }
 }
+const compile = (files: Files) => {
+    const main = files[ENTRY_FILE_NAME]
+    const compileCode = babelTransform(ENTRY_FILE_NAME, main.value, files)
+    return { compileCode }
+}
 const getModuleFile = (files, moduleName: string) => {
     let _moduleName = moduleName.split("./").pop() || ""
     if (!_moduleName.includes(".")) {
@@ -78,7 +88,10 @@ export const beforeTransformCodeHandler = (code: string, fileName?: string) => {
     let _code = code
     // 如果没有引入React，开头添加React引用
     const regexReact = /import\s+React/g
-    if (!regexReact.test(code)) {
+    if (
+        (fileName.endsWith("jsx") || fileName.endsWith("tsx")) &&
+        !regexReact.test(code)
+    ) {
         _code = `import React from 'react'; import ReactDOM from "react-dom/client"; \n${code}`
     }
     return _code
